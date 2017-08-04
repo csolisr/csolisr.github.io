@@ -59,174 +59,194 @@
 		<script type="text/javascript">
 			//=====
 			
-			var apiKey = "e98ccf69-6131-42ad-a11c-d733698dad63";
-			//Above: test key, will return dummy data but is unlimited
-			//Below: live key, returns actual data but limited per month
-			//Comment/uncomment as necessary, or request a free key at
-			//http://holidayapi.com
-			//var apiKey = "177c7a48-d566-426b-bb50-cf9926f767ec";
+			window.onload = function() {
 			
-			function generate() {
-				var form = document.getElementById("calendar-input");
-				var startDate = document.getElementById("start-date").value;
-				var numberOfDays = document.getElementById("number-of-days").value;
-				var countryCode = document.getElementById("country-code").value;
+				var apiKey = "e98ccf69-6131-42ad-a11c-d733698dad63";
+				//Above: test key, will return dummy data but is unlimited
+				//Below: live key, returns actual data but limited per month
+				//Comment/uncomment as necessary, or request a free key at
+				//http://holidayapi.com
+				//var apiKey = "177c7a48-d566-426b-bb50-cf9926f767ec";
 				
-				//TODO:
-				//- Count the current day of the week, fill row with
-				//  blanks until reaching the week's Sunday
-				//- Count the current day of the month, break table on
-				//  the last one, fill row with blanks until reaching
-				//  the week's Saturday, generate a new month banner,
-				//  fill new row with blanks from Sunday to that month's
-				//  1st
-				//- After finishing, making sure that the rest of the
-				//  last week is filled with blanks until the week's
-				//  Saturday
-				
-				if (validateDate(startDate) && validateNumber(numberOfDays) && validateCountry(countryCode)){
+				function generate() {
+					var form = document.getElementById("calendar-input");
+					var startDate = document.getElementById("start-date").value;
+					var numberOfDays = document.getElementById("number-of-days").value;
+					var countryCode = document.getElementById("country-code").value;
 					
-					var startYear = parseInt(startDate.substr(0,4));
-					var startMonth = parseInt(startDate.substr(5,2));
-					var startDay = parseInt(startDate.substr(8,2));
+					//TODO:
+					//- Count the current day of the week, fill row with
+					//  blanks until reaching the week's Sunday
+					//- Count the current day of the month, break table on
+					//  the last one, fill row with blanks until reaching
+					//  the week's Saturday, generate a new month banner,
+					//  fill new row with blanks from Sunday to that month's
+					//  1st
+					//- After finishing, making sure that the rest of the
+					//  last week is filled with blanks until the week's
+					//  Saturday
 					
-					var date = new Date(startYear, startMonth-1, startDay, 0, 0, 0, 0);
-					
-					var outputDiv = document.getElementById("output");
-					var outputTable = document.createElement("table");
-					outputDiv.appendChild(outputTable);
-					
-					//Start loop
-					//TODO: refactor loop to process per week and not
-					//per day
-					
-					var weekRow;
-					for (var i = 0; i < numberOfDays; i++){
-						var weekday = date.getUTCDay();
+					if (validateDate(startDate) && validateNumber(numberOfDays) && validateCountry(countryCode)){
 						
-						if (weekday == 0 || i == 0 || date.getUTCDate() == 1) {
-							//Generate a monthBanner if a month has passed
-							if (i == 0 || date.getUTCDate() == 1) {
-								var monthBanner = document.createElement("tr");
-								monthBanner.className = "monthBanner";
-								var monthBannerString = monthName(date.getUTCMonth()) + " " + date.getUTCFullYear();
-								var monthBannerTD = document.createElement("td");
-								monthBannerTD.innerHTML = monthBannerString;
-								monthBannerTD.setAttribute("colspan", "7");
-								outputTable.appendChild(monthBanner);
-								monthBanner.appendChild(monthBannerTD);
-							}
-							//Generate a new weekRow if a week has passed
-							//or if a new table/month is created
-							weekRow = document.createElement("tr");
-							//Special case: first row (or first day of the month)
-							//Fill from Sunday to the day with blanks
-							if (weekday != 0) {
-								for (var j = weekday; j >= 0; j--){
-									var blank = document.createElement("td");
-									blank.className = "invalid";
-									weekRow.appendChild(blank);
+						var startYear = parseInt(startDate.substr(0,4));
+						var startMonth = parseInt(startDate.substr(5,2));
+						var startDay = parseInt(startDate.substr(8,2));
+						
+						var date = new Date(startYear, startMonth-1, startDay, 0, 0, 0, 0);
+						
+						var outputDiv = document.getElementById("output");
+						//TODO: if the outputTable already exists, remove it
+						outputDiv.innerHTML = "";
+						var outputTable = document.createElement("table");
+						outputDiv.appendChild(outputTable);
+						
+						//Start loop
+						//TODO: refactor loop to process per week and not
+						//per day
+						
+						var weekRow;
+						for (var i = 0; i < numberOfDays; i++){
+							var weekday = date.getUTCDay();
+							
+							if (weekday == 0 || i == 0 || date.getUTCDate() == 1) {
+								//Generate a monthBanner if a month has passed
+								if (i == 0 || date.getUTCDate() == 1) {
+									var monthBanner = document.createElement("tr");
+									monthBanner.className = "monthBanner";
+									var monthBannerString = monthName(date.getUTCMonth()) + " " + date.getUTCFullYear();
+									var monthBannerTD = document.createElement("td");
+									monthBannerTD.innerHTML = monthBannerString;
+									monthBannerTD.setAttribute("colspan", "7");
+									outputTable.appendChild(monthBanner);
+									monthBanner.appendChild(monthBannerTD);
+								}
+								//Generate a new weekRow if a week has passed
+								//or if a new table/month is created
+								weekRow = document.createElement("tr");
+								//Special case: first row (or first day of the month)
+								//Fill from Sunday to the day with blanks
+								if (weekday != 0) {
+									for (var j = weekday; j > 0; j--){
+										var blank = document.createElement("td");
+										blank.className = "invalid";
+										weekRow.appendChild(blank);
+									}
 								}
 							}
+							
+							var dayField = document.createElement("td");
+							//TODO: use API to mark holidays
+							if (weekday == 0 || weekday == 6) {
+								dayField.className = "weekend";
+							} else {
+								dayField.className = "weekday";
+							}
+							dayField.innerHTML = date.getUTCDate();
+							weekRow.appendChild(dayField);
+							
+							if (i >= numberOfDays - 1 || lastDay(date)) {
+								//Special case: last row
+								//In single-week outputs it can also be the first!
+								if (weekday != 6) {
+									for (var j = weekday; j < 6; j++){
+										var blank = document.createElement("td");
+										blank.className = "invalid";
+										weekRow.appendChild(blank);
+									}
+								}
+							}
+							
+							
+							//Print the week row.
+							//weekRow.innerHTML = "TEST";
+							outputTable.appendChild(weekRow);
+							
+							//Iterate to the next day
+							date = new Date(date.getTime() + 86400000);
+							
+							//TODO: Set a new month marker when the month's done
 						}
-						
-						var dayField = document.createElement("td");
-						//TODO: use API to mark holidays
-						if (weekday == 0 || weekday == 6) {
-							dayField.className = "weekend";
-						} else {
-							dayField.className = "weekday";
-						}
-						dayField.innerHTML = date.getUTCDate();
-						weekRow.appendChild(dayField);
-						
-						if (i >= numberOfDays - 1) {
-							//Special case: last row
-							//In single-week outputs it can also be the first!
-							keepLooping = false;
-						}
-						
-						
-						//Print the week row.
-						//weekRow.innerHTML = "TEST";
-						outputTable.appendChild(weekRow);
-						
-						//TODO: Set a new month marker when the month's done
 					}
 				}
-			}
-			
-			function validateDate(dateString){
-				//Validate date, convert to its components
-				if (dateString.length == 10 && dateString[4] == "-" && dateString[7] == "-") {
-					var startYear = parseInt(dateString.substr(0,4));
-					var startMonth = parseInt(dateString.substr(5,2));
-					var startDay = parseInt(dateString.substr(8,2));
-					if (!isNaN(startYear) && !isNaN(startMonth) && !isNaN(startDay)) {
-						//Good, we're validated!
-						return true;
+				
+				function validateDate(dateString){
+					//Validate date, convert to its components
+					if (dateString.length == 10 && dateString[4] == "-" && dateString[7] == "-") {
+						var startYear = parseInt(dateString.substr(0,4));
+						var startMonth = parseInt(dateString.substr(5,2));
+						var startDay = parseInt(dateString.substr(8,2));
+						if (!isNaN(startYear) && !isNaN(startMonth) && !isNaN(startDay)) {
+							//Good, we're validated!
+							return true;
+						}
+					}
+					//else:
+					return false;
+				}
+				
+				function validateNumber(num){
+					return !isNaN(parseInt(num));
+				}
+				
+				function validateCountry(countryCode){
+					//TODO: compare with the whole list of countries in the
+					//API
+					return (countryCode.length == 2);
+				}
+				
+				function monthName(monthNumber){
+					monthNumber = monthNumber + 1;
+					switch(monthNumber) {
+						case 1:
+							return "January";
+							break;
+						case 2:
+							return "February";
+							break;
+						case 3:
+							return "March";
+							break;
+						case 4:
+							return "April";
+							break;
+						case 5:
+							return "May";
+							break;
+						case 6:
+							return "June";
+							break;
+						case 7:
+							return "July";
+							break;
+						case 8:
+							return "August";
+							break;
+						case 9:
+							return "September";
+							break;
+						case 10:
+							return "October";
+							break;
+						case 11:
+							return "November";
+							break;
+						case 12:
+							return "December";
+							break;
+						default:
+							return "";
+							break;
 					}
 				}
-				//else:
-				return false;
-			}
-			
-			function validateNumber(num){
-				return !isNaN(parseInt(num));
-			}
-			
-			function validateCountry(countryCode){
-				//TODO: compare with the whole list of countries in the
-				//API
-				return (countryCode.length == 2);
-			}
-			
-			function monthName(monthNumber){
-				monthNumber = monthNumber + 1;
-				switch(monthNumber) {
-					case 1:
-						return "January";
-						break;
-					case 2:
-						return "February";
-						break;
-					case 3:
-						return "March";
-						break;
-					case 4:
-						return "April";
-						break;
-					case 5:
-						return "May";
-						break;
-					case 6:
-						return "June";
-						break;
-					case 7:
-						return "July";
-						break;
-					case 8:
-						return "August";
-						break;
-					case 9:
-						return "September";
-						break;
-					case 10:
-						return "October";
-						break;
-					case 11:
-						return "November";
-						break;
-					case 12:
-						return "December";
-						break;
-					default:
-						return "";
-						break;
+				
+				function lastDay(date) {
+					var tomorrow = new Date(date.getTime() + 86400000);
+					return (tomorrow.getUTCDate() == 1);
 				}
-			}
+				
+				document.getElementById("generate-button").onclick = generate();
 			
-			document.getElementById("generate-button").onclick = generate();
+			}
 			//=====
 		</script>
 	</body>
