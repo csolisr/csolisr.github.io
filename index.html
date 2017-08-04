@@ -2,6 +2,40 @@
 	<head>
 		<title>Calendar generator</title>
 		<meta charset="utf-8"></meta>
+		<style type="text/css">
+			body {
+				font-family: Arial, sans;
+			}
+			tr {
+				height: 20px;
+			}
+			tr.monthBanner {
+				width: 140px;
+				padding: 5px 5px;
+				background-color: navy;
+			}
+			tr.monthBanner td {
+				width: 140px;
+				padding: 5px 5px;
+				color: white;
+			}
+			td {
+				padding: 5px 5px;
+				width: 20px;
+			}
+			td.invalid {
+				background-color: gray;
+			}
+			td.weekday {
+				background-color: green;
+			}
+			td.weekend {
+				background-color: yellow;
+			}
+			td.holiday {
+				background-color: orange;
+			}
+		</style>
 	</head>
 	<body>
 		<div id="input">
@@ -46,6 +80,9 @@
 				//  the week's Saturday, generate a new month banner,
 				//  fill new row with blanks from Sunday to that month's
 				//  1st
+				//- After finishing, making sure that the rest of the
+				//  last week is filled with blanks until the week's
+				//  Saturday
 				
 				if (validateDate(startDate) && validateNumber(numberOfDays) && validateCountry(countryCode)){
 					
@@ -53,17 +90,71 @@
 					var startMonth = parseInt(startDate.substr(5,2));
 					var startDay = parseInt(startDate.substr(8,2));
 					
-					var currentYear = startYear;
-					var currentMonth = startMonth;
-					var currentDay = startDay;
+					var date = new Date();
+					date.setFullYear(startYear);
+					date.setMonth(startMonth-1);
+					date.setDate(startDay-1);
+					
+					var outputDiv = document.getElementById("output");
+					var outputTable = document.createElement("table");
+					outputDiv.appendChild(outputTable);
 					
 					//Start loop
+					//TODO: refactor loop to process per week and not
+					//per day
+					
+					var weekRow;
 					for (var i = 0; i < numberOfDays; i++){
-						var output = document.getElementById("output");
-						var weekRow = document.createElement("div");
-						weekRow.innerHTML = "TEST";
-						output.appendChild(weekRow);
-						//TODO: use getDay() to get the week's Sunday (getDay() == 0)
+						var weekday = date.getDay();
+						
+						if (weekday == 0 || i == 0 || date.getDate() == 1) {
+							//Generate a monthBanner if a month has passed
+							if (date.getDate() == 1) {
+								var monthBanner = document.createElement("tr");
+								monthBanner.className = "monthBanner";
+								var monthBannerString = monthName(date.getMonth()) + " " + date.getFullYear();
+								var monthBannerTD = document.createElement("td");
+								monthBannerTD.innerHTML = monthBannerString;
+								monthBannerTD.setAttribute("colspan", "7");
+								outputTable.appendChild(monthBanner);
+								monthBanner.appendChild(monthBannerTD);
+							}
+							//Generate a new weekRow if a week has passed
+							//or if a new table/month is created
+							weekRow = document.createElement("tr");
+							//Special case: first row (or first day of the month)
+							//Fill from Sunday to the day with blanks
+							if (weekday != 0) {
+								for (var j = weekday; j >= 0; j--){
+									var blank = document.createElement("td");
+									blank.className = "invalid";
+									weekRow.appendChild(blank);
+								}
+							}
+						}
+						
+						var dayField = document.createElement("td");
+						//TODO: use API to mark holidays
+						if (weekday == 0 || weekday == 6) {
+							dayField.className = "weekend";
+						} else {
+							dayField.className = "weekday";
+						}
+						dayField.innerHTML = date.getDate();
+						weekRow.appendChild(dayField);
+						
+						if (i >= numberOfDays - 1) {
+							//Special case: last row
+							//In single-week outputs it can also be the first!
+							keepLooping = false;
+						}
+						
+						
+						//Print the week row.
+						//weekRow.innerHTML = "TEST";
+						outputTable.appendChild(weekRow);
+						
+						//TODO: Set a new month marker when the month's done
 					}
 				}
 			}
@@ -91,6 +182,50 @@
 				//TODO: compare with the whole list of countries in the
 				//API
 				return (countryCode.length == 2);
+			}
+			
+			function monthName(monthNumber){
+				switch(monthNumber) {
+					case 1:
+						return "January";
+						break;
+					case 2:
+						return "February";
+						break;
+					case 3:
+						return "March";
+						break;
+					case 4:
+						return "April";
+						break;
+					case 5:
+						return "May";
+						break;
+					case 6:
+						return "June";
+						break;
+					case 7:
+						return "July";
+						break;
+					case 8:
+						return "August";
+						break;
+					case 9:
+						return "September";
+						break;
+					case 10:
+						return "October";
+						break;
+					case 11:
+						return "November";
+						break;
+					case 12:
+						return "December";
+						break;
+					default:
+						return "";
+						break;
+				}
 			}
 			
 			document.getElementById("generate-button").onclick = generate();
