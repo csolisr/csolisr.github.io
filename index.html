@@ -1,6 +1,7 @@
 <html>
 	<head>
 		<title>Calendar generator</title>
+		<meta charset="utf-8"></meta>
 	</head>
 	<body>
 		<div id="input">
@@ -47,13 +48,21 @@
 				//  1st
 				
 				if (validateDate(startDate) && validateNumber(numberOfDays) && validateCountry(countryCode)){
+					
+					var startYear = parseInt(startDate.substr(0,4));
+					var startMonth = parseInt(startDate.substr(5,2));
+					var startDay = parseInt(startDate.substr(8,2));
+					
+					var currentYear = startYear;
+					var currentMonth = startMonth;
+					var currentDay = startDay;
+					
 					//Start loop
 					for (var i = 0; i < numberOfDays; i++){
-						console.log(i);
-						
-						var startYear = parseInt(startDate.substr(0,4));
-						var startMonth = parseInt(startDate.substr(5,2));
-						var startDay = parseInt(startDate.substr(8,2));
+						var output = document.getElementById("output");
+						var weekRow = document.createElement("div");
+						weekRow.innerHTML = "TEST";
+						output.appendChild(weekRow);
 						//TODO: use getDay() to get the week's Sunday (getDay() == 0)
 					}
 				}
