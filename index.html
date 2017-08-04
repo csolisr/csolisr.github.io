@@ -31,7 +31,7 @@
 			//http://holidayapi.com
 			//var apiKey = "177c7a48-d566-426b-bb50-cf9926f767ec";
 			
-			var generate = function(){
+			function generate() {
 				var form = document.getElementById("calendar-input");
 				var startDate = document.getElementById("start-date").value;
 				var numberOfDays = document.getElementById("number-of-days").value;
@@ -65,7 +65,7 @@
 					var startYear = parseInt(dateString.substr(0,4));
 					var startMonth = parseInt(dateString.substr(5,2));
 					var startDay = parseInt(dateString.substr(8,2));
-					if (!isNaN(startYear) && !isNaN(startMonth) && isNaN(startDay)) {
+					if (!isNaN(startYear) && !isNaN(startMonth) && !isNaN(startDay)) {
 						//Good, we're validated!
 						return true;
 					}
