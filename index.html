@@ -95,7 +95,7 @@
 						var date = new Date(startYear, startMonth-1, startDay, 0, 0, 0, 0);
 						
 						var outputDiv = document.getElementById("output");
-						//TODO: if the outputTable already exists, remove it
+						//If the outputTable already exists, remove it
 						outputDiv.innerHTML = "";
 						var outputTable = document.createElement("table");
 						outputDiv.appendChild(outputTable);
@@ -244,7 +244,7 @@
 					return (tomorrow.getUTCDate() == 1);
 				}
 				
-				document.getElementById("generate-button").onclick = generate();
+				document.getElementById("generate-button").onclick = generate;
 			
 			}
 			//=====
