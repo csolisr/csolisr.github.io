@@ -90,10 +90,7 @@
 					var startMonth = parseInt(startDate.substr(5,2));
 					var startDay = parseInt(startDate.substr(8,2));
 					
-					var date = new Date();
-					date.setFullYear(startYear);
-					date.setMonth(startMonth-1);
-					date.setDate(startDay-1);
+					var date = new Date(startYear, startMonth-1, startDay, 0, 0, 0, 0);
 					
 					var outputDiv = document.getElementById("output");
 					var outputTable = document.createElement("table");
@@ -105,14 +102,14 @@
 					
 					var weekRow;
 					for (var i = 0; i < numberOfDays; i++){
-						var weekday = date.getDay();
+						var weekday = date.getUTCDay();
 						
-						if (weekday == 0 || i == 0 || date.getDate() == 1) {
+						if (weekday == 0 || i == 0 || date.getUTCDate() == 1) {
 							//Generate a monthBanner if a month has passed
-							if (date.getDate() == 1) {
+							if (i == 0 || date.getUTCDate() == 1) {
 								var monthBanner = document.createElement("tr");
 								monthBanner.className = "monthBanner";
-								var monthBannerString = monthName(date.getMonth()) + " " + date.getFullYear();
+								var monthBannerString = monthName(date.getUTCMonth()) + " " + date.getUTCFullYear();
 								var monthBannerTD = document.createElement("td");
 								monthBannerTD.innerHTML = monthBannerString;
 								monthBannerTD.setAttribute("colspan", "7");
@@ -140,7 +137,7 @@
 						} else {
 							dayField.className = "weekday";
 						}
-						dayField.innerHTML = date.getDate();
+						dayField.innerHTML = date.getUTCDate();
 						weekRow.appendChild(dayField);
 						
 						if (i >= numberOfDays - 1) {
@@ -185,6 +182,7 @@
 			}
 			
 			function monthName(monthNumber){
+				monthNumber = monthNumber + 1;
 				switch(monthNumber) {
 					case 1:
 						return "January";
